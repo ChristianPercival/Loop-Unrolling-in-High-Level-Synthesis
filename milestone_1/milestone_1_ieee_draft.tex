@@ -1,282 +1,182 @@
 \documentclass[conference]{IEEEtran}
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
+\usepackage{amsmath}
 \usepackage{cite}
-\usepackage{amsmath,amssymb}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{xcolor}
-\usepackage{listings}
 \usepackage{url}
 
-\lstset{
-  basicstyle=\ttfamily\footnotesize,
-  breaklines=true,
-  frame=single,
-  columns=fullflexible,
-  keepspaces=true,
-  showstringspaces=false
-}
+\begin{document}
 
-\title{Milestone 1: Technical Understanding and Research Framing\\Loop Unrolling and Controller Delay in High-Level Synthesis}
+\title{Milestone 1: Technical Understanding and Research Framing\\
+Loop Unrolling and Controller Delay in High-Level Synthesis}
 
 \author{\IEEEauthorblockN{Christian Percival}
-\IEEEauthorblockA{Electronic Engineering\\
-Hochschule Hamm--Lippstadt\\
-Lippstadt, Germany\\
-Email: percival.christian@gmail.com}}
+\IEEEauthorblockA{Hochschule Hamm-Lippstadt\\
+Electronic Engineering}}
 
-\begin{document}
 \maketitle
 
-\begin{abstract}
-This milestone documents the technical understanding and research framing for the seminar topic based on the assigned reference paper by Kurra, Singh, and Panda. The paper studies the impact of loop unrolling on controller delay in high-level synthesis (HLS). The main technical issue is that loop unrolling can reduce latency by exposing parallelism, but it can also increase the complexity and delay of the generated finite-state-machine (FSM) controller. This milestone identifies the problem statement, core technical idea, relevant formalism, assumptions, limitations, resource aspects, implementation direction, and open questions for feedback.
-\end{abstract}
+\section{Milestone 1: Technical Understanding and Research Framing}
 
-\begin{IEEEkeywords}
-Milestone 1, high-level synthesis, loop unrolling, controller delay, FSM, timing closure, embedded systems.
-\end{IEEEkeywords}
+\subsection{Topic}
 
-\section{Purpose of Milestone 1}
-The purpose of this milestone is not to produce a polished final paper, but to show technical understanding of the assigned reference paper. The milestone focuses on the technical problem, the main contribution, the assumptions, and the research framing. The final paper will later expand this into related work, critical evaluation, and implementation results.
-
-\section{Assigned Reference}
-The assigned reference is:
-
-\begin{quote}
-S. Kurra, N. K. Singh, and P. R. Panda, ``The Impact of Loop Unrolling on Controller Delay in High Level Synthesis,'' DATE, 2007.
-\end{quote}
-
-The paper studies how different loop unroll factors affect controller delay in HLS-generated hardware. It proposes an estimation-based method to choose suitable unroll factors without exhaustively synthesizing all possible versions of the design~\cite{kurra2007impact}.
-
-\section{Problem Statement}
-Loop unrolling is a well-known optimization technique. It duplicates the loop body so that multiple iterations can be executed or scheduled together. In software, unrolling is usually used to reduce loop overhead and expose instruction-level parallelism. In HLS, the situation is more complex because the transformed loop is not only compiled into instructions, but synthesized into hardware.
-
-The technical problem is:
-
-\begin{quote}
-How can an HLS tool select a loop unroll factor that improves latency without causing excessive FSM/controller delay and timing violations?
-\end{quote}
-
-This is important because HLS output usually contains both a datapath and a controller. The datapath contains functional units such as adders, multipliers, registers, memories, and multiplexers. The controller is often an FSM that generates control signals for the datapath. If loop unrolling increases the size and complexity of the FSM too much, the controller can become part of the critical path and limit the clock frequency.
-
-\section{Motivation}
-A designer might assume that a larger unroll factor always improves performance. This is not necessarily true in HLS. Unrolling can reduce the number of loop iterations, but it also increases hardware complexity.
-
-Important motivation points:
 \begin{itemize}
-    \item Loop unrolling can reduce latency by exposing parallelism.
-    \item Larger loop bodies can require more operations to be scheduled.
-    \item More operations can increase the number of control states and control signals.
-    \item More resource sharing can increase multiplexer sizes.
-    \item The final design may fail timing if controller delay is ignored.
+    \item The topic of this seminar paper is the impact of loop unrolling on controller delay in high-level synthesis.
+    \item The main reference paper studies how different loop unrolling factors influence the delay of the controller generated during high-level synthesis.
+    \item The paper focuses on the problem that loop unrolling can improve performance, but can also increase the complexity and delay of the finite-state machine controller.
 \end{itemize}
 
-Therefore, loop unrolling should be treated as a design-space exploration problem, not as a simple ``more is better'' optimization.
+\subsection{Problem Statement}
 
-\section{Core Technical Idea}
-The core idea of the reference paper is to estimate the effect of loop unrolling on FSM/controller delay before performing expensive detailed synthesis. The paper proposes selecting unroll factors based on both latency improvement and additional controller delay.
-
-The general optimization goal is:
-
-\begin{quote}
-Minimize latency while keeping FSM delay below a given delay budget.
-\end{quote}
-
-The paper uses a heuristic similar to a knapsack problem. Each unrolling decision has:
 \begin{itemize}
-    \item a benefit: reduction in latency;
-    \item a cost: increase in FSM/controller delay.
+    \item Loop unrolling is a common optimization technique.
+    \item It duplicates the body of a loop so that multiple loop iterations are executed together.
+    \item In software compilation, loop unrolling is usually used to reduce loop overhead and expose more instruction-level parallelism.
+    \item In high-level synthesis, loop unrolling has additional hardware effects.
+    \item The unrolled loop body becomes part of the generated hardware structure.
+    \item This can increase the number of operations, control states, multiplexers, and resource-sharing decisions.
+    \item Because of this, the controller delay can increase.
+    \item If controller delay is not considered, the synthesized design may fail to meet the required clock period.
+    \item Therefore, the problem is not only how to reduce latency, but how to choose an unroll factor that improves performance while still satisfying timing constraints.
 \end{itemize}
 
-A simplified priority function is:
+\subsection{Motivation}
+
+\begin{itemize}
+    \item High-level synthesis allows designers to create hardware from high-level descriptions such as C or C++.
+    \item This makes hardware development easier, but it also means that compiler-style optimizations need to be understood from a hardware perspective.
+    \item A transformation that looks beneficial at the algorithmic level may create timing or resource problems after synthesis.
+    \item Loop unrolling is a good example of this issue.
+    \item A larger unroll factor can reduce the number of loop iterations.
+    \item However, it can also increase the size and delay of the controller.
+    \item This makes it important to study the tradeoff between latency reduction and controller-delay increase.
+\end{itemize}
+
+\subsection{Core Technical Idea}
+
+\begin{itemize}
+    \item The main idea is to predict how the controller delay changes when the loop unroll factor changes.
+    \item Instead of synthesizing every possible unroll factor, the paper proposes an estimation-based method.
+    \item The method uses high-level information such as:
+    \begin{itemize}
+        \item number of operations,
+        \item number of control steps,
+        \item number of FSM states,
+        \item number of state bits,
+        \item number of functional-unit control bits,
+        \item number of variables.
+    \end{itemize}
+    \item These values are used to estimate FSM/controller delay.
+    \item The estimated delay is then used to guide the selection of a suitable unroll factor.
+    \item The goal is to find an unroll factor that improves latency while remaining inside a given delay budget.
+\end{itemize}
+
+\subsection{Important Technical Concepts}
+
+\begin{itemize}
+    \item High-Level Synthesis:
+    \begin{itemize}
+        \item Converts a behavioral description into RTL hardware.
+        \item Generates a datapath and a controller.
+    \end{itemize}
+
+    \item Datapath:
+    \begin{itemize}
+        \item Contains arithmetic units, registers, multiplexers, and memories.
+    \end{itemize}
+
+    \item Controller:
+    \begin{itemize}
+        \item Usually implemented as a finite-state machine.
+        \item Controls when operations happen and which resources are selected.
+    \end{itemize}
+
+    \item Loop Unrolling:
+    \begin{itemize}
+        \item Duplicates loop body operations.
+        \item Reduces loop-control overhead.
+        \item Exposes more parallelism.
+        \item Can increase hardware complexity.
+    \end{itemize}
+
+    \item Controller Delay:
+    \begin{itemize}
+        \item Delay caused by FSM logic and control decisions.
+        \item Can become part of the critical path.
+        \item Can limit the achievable clock period.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Formalism and Model}
+
+\begin{itemize}
+    \item The paper uses an estimation model for FSM delay.
+    \item A simplified form of the model is:
+\end{itemize}
 
 \begin{equation}
-Pr(l_i) = \frac{\text{Reduction in latency}}{\text{Additional FSM delay}}.
-\label{eq:priority}
+Delay = A \cdot \log(\#operations) \cdot (\#state\ bits)
 \end{equation}
 
-This gives high priority to loops where unrolling gives a large performance benefit with a relatively small controller-delay penalty.
-
-\section{Relevant Formalism and Model}
-The reference paper uses high-level information to estimate controller delay. A simplified version of the delay model is:
-
-\begin{equation}
-Delay = A \cdot \log(\#operations) \cdot (\#state\ bits),
-\label{eq:delay}
-\end{equation}
-
-where $A$ is a technology-dependent parameter. It depends on resource constraints, function-unit control bits, and variables. The important idea is that controller delay increases with the number of operations and with the number of bits needed to represent FSM states.
-
-The paper also considers how unrolling changes operation count. If a loop body contains $LOps(l_i)$ operations and is unrolled by factor $u_i$, the number of duplicated loop-body operations increases approximately by:
-
-\begin{equation}
-(u_i - 1) \cdot LOps(l_i).
-\label{eq:opsincrease}
-\end{equation}
-
-If the unroll factor does not evenly divide the loop bound, a trailer loop may be needed. This can reduce the expected latency benefit and add extra operations.
-
-\section{Example Kernel for Understanding}
-A simple dot-product loop is a suitable example:
-
-\begin{lstlisting}[language=C,caption={Original loop.}]
-#define N 32
-
-int dot_product(int x[N], int z[N]) {
-    int q = 0;
-    for (int i = 0; i < N; i++) {
-        q += x[i] * z[i];
-    }
-    return q;
-}
-\end{lstlisting}
-
-A partially unrolled version with factor two is:
-
-\begin{lstlisting}[language=C,caption={Partially unrolled loop.}]
-int dot_product(int x[N], int z[N]) {
-    int q = 0;
-    for (int i = 0; i < N; i += 2) {
-        q += x[i] * z[i];
-        q += x[i+1] * z[i+1];
-    }
-    return q;
-}
-\end{lstlisting}
-
-This version has fewer loop iterations, but the loop body is larger. In an HLS design, this can increase resource demand and controller complexity.
-
-\section{Assumptions and Scope Limitations}
-The reference paper makes several assumptions and has scope limitations that are important for the seminar framing.
+\begin{itemize}
+    \item The constant $A$ depends on hardware-specific factors such as functional-unit control bits and number of variables.
+    \item The number of operations increases when the loop body is duplicated.
+    \item The number of state bits depends on the number of FSM states or control steps.
+    \item The unroll factor affects both operation count and controller complexity.
+\end{itemize}
 
 \subsection{Assumptions}
-\begin{itemize}
-    \item The input is a behavioral or C-style program that can be processed by an HLS flow.
-    \item Loops have analyzable structure and known or estimable iteration counts.
-    \item The FSM delay budget is provided as an input to the algorithm.
-    \item The delay-estimation constants depend on the target technology and synthesis flow.
-    \item The model focuses on controller delay rather than full system-level performance.
-\end{itemize}
-
-\subsection{Limitations}
-\begin{itemize}
-    \item Exact numerical results from the paper are not directly transferable to every FPGA or modern HLS tool.
-    \item Modern HLS tools may apply additional optimizations that interact with unrolling.
-    \item FPGA timing may be strongly affected by routing, memory architecture, and placement.
-    \item Controller delay may not be directly reported by all student-accessible HLS tools.
-    \item A low-budget student implementation can demonstrate the trend, but may not reproduce the original ASIC-based delay model exactly.
-\end{itemize}
-
-\section{Runtime, Memory, Scalability, and Resource Aspects}
-Loop unrolling affects several engineering aspects.
-
-\subsection{Runtime and Latency}
-Unrolling can reduce the number of loop iterations and expose parallelism. However, latency does not always decrease monotonically. If the unroll factor does not evenly divide the loop bound, a trailer loop may reduce the benefit.
-
-\subsection{Hardware Resources}
-Unrolling may increase the number of adders, multipliers, memory ports, registers, and multiplexers required by the generated hardware. If resources are limited, the HLS scheduler may still serialize operations, reducing the benefit of unrolling.
-
-\subsection{Controller Complexity}
-The FSM may require more states, more state bits, and more complex next-state logic. This is the main focus of the reference paper.
-
-\subsection{Scalability}
-Exhaustively testing all unroll factors for all loops becomes expensive when a program contains many loops. Therefore, the paper proposes pruning the search space and using estimation instead of full synthesis for every candidate.
-
-\section{Possible Student Implementation Direction}
-The implementation will be designed as a small reproducible experiment. The aim is to compare unroll factors for a simple loop kernel and measure or estimate their impact.
-
-\subsection{Option A: HLS-Based Experiment}
-Use Vitis HLS, Intel HLS, or another available HLS tool. Synthesize the same loop kernel with unroll factors:
-
-\begin{equation}
-U = \{1, 2, 4, 8, 16, 32\}.
-\end{equation}
-
-Record:
-\begin{itemize}
-    \item latency in cycles;
-    \item estimated clock period;
-    \item timing slack;
-    \item LUT/ALM usage;
-    \item register usage;
-    \item DSP usage;
-    \item BRAM or memory usage;
-    \item synthesis time.
-\end{itemize}
-
-\subsection{Option B: Python Estimation Model}
-If HLS tools are not available, implement a simplified model based on the paper's equations. The Python model can estimate latency and controller delay trends for each unroll factor.
-
-\begin{lstlisting}[language=Python,caption={Simplified estimation idea.}]
-for u in [1, 2, 4, 8, 16, 32]:
-    iterations = ceil(N / u)
-    operations = base_ops + (u - 1) * loop_body_ops
-    state_bits = ceil(log2(estimated_states))
-    controller_delay = A * log2(operations) * state_bits
-\end{lstlisting}
-
-The Python model is not a replacement for synthesis, but it can demonstrate why latency and controller delay move in opposite directions.
-
-\section{Expected Output for Later Milestones}
-Milestone 1 provides the technical foundation. Later milestones can expand as follows:
 
 \begin{itemize}
-    \item Milestone 2: Compare loop unrolling with pipelining, resource sharing, memory partitioning, and design-space exploration.
-    \item Milestone 3: Critically evaluate where the paper's approach is useful, where it may fail, and how modern HLS tools change the situation.
-    \item Milestone 4: Final paper, slides, implementation results, and discussion.
+    \item The method assumes that the loop structure is suitable for unrolling.
+    \item The loop bounds and unroll factors must be known or estimable.
+    \item The delay model depends on the synthesis flow and target technology.
+    \item The method assumes that controller delay can be estimated from high-level information.
+    \item The paper focuses on controller delay, not the complete timing behavior of all possible hardware targets.
 \end{itemize}
 
-\section{Open Questions for Feedback}
-The following questions should be clarified during feedback:
+\subsection{Scope Limitations}
 
-\begin{enumerate}
-    \item Should the implementation focus on a real HLS tool, or is a Python estimation model acceptable as the main demonstration?
-    \item If using an HLS tool, which tool is preferred by the course or university environment?
-    \item Is FPGA timing slack an acceptable indirect measurement if controller delay is not reported separately?
-    \item Should the implementation compare unrolling only, or also include pipelining as a related optimization?
-    \item How much mathematical detail from the reference paper should be included in the final seminar paper?
-\end{enumerate}
+\begin{itemize}
+    \item The original experiments were performed using a specific behavioral synthesis framework and ASIC library.
+    \item The exact numerical delay values may not directly transfer to modern FPGA tools.
+    \item Modern HLS tools may apply additional optimizations that interact with loop unrolling.
+    \item Controller delay may not always be directly visible in student-level HLS reports.
+    \item In a student implementation, resource usage, latency, clock estimate, and timing slack may need to be used as indirect indicators.
+\end{itemize}
 
-\section{Milestone 1 Checklist Mapping}
-\begin{table}[htbp]
-\caption{Milestone 1 checklist mapping.}
-\label{tab:m1checklist}
-\centering
-\begin{tabular}{p{0.43\linewidth}p{0.45\linewidth}}
-\toprule
-\textbf{Checklist item} & \textbf{Current status} \\
-\midrule
-State the technical problem & Covered in Sections III--IV \\
-Explain main contribution & Covered in Section V \\
-Identify formalism/model & Covered in Section VI \\
-Identify assumptions and limitations & Covered in Section VIII \\
-Discuss runtime/resource aspects & Covered in Section IX \\
-Document unclear points & Covered in Section XI \\
-Explain relevance to embedded systems & Covered through HLS, timing, resource, and FPGA discussion \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Resource, Runtime, and Scalability Aspects}
 
-\section{Conclusion}
-The assigned paper addresses an important HLS optimization problem: loop unrolling can reduce latency, but it can also increase FSM/controller delay. The main contribution is an estimation-based method for choosing unroll factors while respecting a controller-delay budget. For the seminar, this topic is relevant because it connects compiler-style optimization with embedded hardware constraints such as timing closure, resource usage, and scalability.
+\begin{itemize}
+    \item Exhaustively synthesizing every possible unroll factor can be very time-consuming.
+    \item The number of possible design choices grows when multiple loops are considered.
+    \item Large unroll factors can increase:
+    \begin{itemize}
+        \item operation count,
+        \item FSM complexity,
+        \item multiplexer size,
+        \item functional-unit sharing complexity,
+        \item synthesis time,
+        \item hardware area.
+    \end{itemize}
+    \item The paper proposes estimation and pruning to avoid unnecessary synthesis runs.
+    \item This makes the approach more scalable than exhaustive exploration.
+\end{itemize}
+
+\subsection{Open Questions}
+
+\begin{itemize}
+    \item How accurately can the original delay model be reproduced using modern FPGA-based HLS tools?
+    \item Can controller delay be separated clearly from datapath and routing delay in student-level synthesis reports?
+    \item How does loop unrolling interact with loop pipelining in modern HLS tools?
+    \item What is the best low-budget way to demonstrate the tradeoff experimentally?
+    \item Would a Python simulation be sufficient, or should a small HLS experiment also be included?
+\end{itemize}
 
 \begin{thebibliography}{00}
-\bibitem{kurra2007impact}
-S. Kurra, N. K. Singh, and P. R. Panda, ``The Impact of Loop Unrolling on Controller Delay in High Level Synthesis,'' in \emph{Design, Automation and Test in Europe Conference and Exhibition (DATE)}, 2007.
 
-\bibitem{sarkar2000optimized}
-V. Sarkar, ``Optimized unrolling of nested loops,'' in \emph{Proceedings of the 14th International Conference on Supercomputing}, 2000.
+\bibitem{kurra2007}
+S. Kurra, N. K. Singh, and P. R. Panda, ``The Impact of Loop Unrolling on Controller Delay in High Level Synthesis,'' DATE, 2007.
 
-\bibitem{carr1994improving}
-S. Carr and K. Kennedy, ``Improving the ratio of memory operations to floating-point operations in loops,'' \emph{ACM Transactions on Programming Languages and Systems}, vol. 16, no. 6, 1994.
-
-\bibitem{gupta2006rapid}
-G. R. Gupta, M. Gupta, and P. R. Panda, ``Rapid estimation of control delay from high-level specifications,'' in \emph{Proceedings of the Design Automation Conference (DAC)}, 2006, pp. 455--458.
-
-\bibitem{allan1995software}
-V. H. Allan, R. B. Jones, R. M. Lee, and S. J. Allan, ``Software pipelining,'' \emph{ACM Computing Surveys}, vol. 27, no. 3, pp. 367--432, 1995.
 \end{thebibliography}
 
 \end{document}

@@ -1,0 +1,200 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{amsmath}
+\usepackage{cite}
+\usepackage{url}
+
+\begin{document}
+
+\title{Milestone 3: Critical Evaluation and Transfer\\
+Loop Unrolling and Controller Delay in High-Level Synthesis}
+
+\author{\IEEEauthorblockN{Christian Percival}
+\IEEEauthorblockA{Hochschule Hamm-Lippstadt\\
+Electronic Engineering}}
+
+\maketitle
+
+\section{Milestone 3: Critical Evaluation and Transfer}
+
+\subsection{Strengths of the Approach}
+
+\begin{itemize}
+    \item The paper identifies an important HLS problem that can easily be overlooked.
+    \item It shows that loop unrolling affects not only latency, but also controller delay.
+    \item It connects a high-level compiler optimization to low-level hardware timing effects.
+    \item The approach avoids exhaustive synthesis of all unroll factors.
+    \item The estimation method can reduce exploration time significantly.
+    \item The priority-based selection method gives a practical way to choose promising unroll factors.
+    \item The paper supports the idea that HLS optimization must consider hardware constraints.
+\end{itemize}
+
+\subsection{Limitations of the Approach}
+
+\begin{itemize}
+    \item The delay model depends on the synthesis flow and target technology.
+    \item The original experiments use a specific behavioral synthesis framework and ASIC library.
+    \item The exact delay constants may not apply directly to FPGA-based HLS tools.
+    \item Modern HLS tools may optimize the design differently.
+    \item Controller delay may be difficult to isolate in modern synthesis reports.
+    \item The method focuses mainly on controller delay, while real timing also includes datapath, routing, memory, and placement effects.
+    \item The approach may be less accurate for designs with complex memory behavior or tool-specific optimizations.
+\end{itemize}
+
+\subsection{Hidden or Restrictive Assumptions}
+
+\begin{itemize}
+    \item The loop structure must be suitable for unrolling.
+    \item Loop bounds should be known or predictable.
+    \item The effect of unrolling should be estimable from high-level information.
+    \item The controller delay model must be calibrated for the target synthesis environment.
+    \item The approach assumes that delay estimation is accurate enough to guide design-space exploration.
+    \item It also assumes that reducing exploration time is more important than finding an absolutely optimal result through exhaustive synthesis.
+\end{itemize}
+
+\subsection{Risks}
+
+\begin{itemize}
+    \item An inaccurate delay estimate could select an unroll factor that fails timing.
+    \item A conservative estimate could reject useful unroll factors.
+    \item Modern HLS tools may hide controller details, making validation difficult.
+    \item A student implementation may only measure total timing and resource usage, not pure controller delay.
+    \item If the benchmark is too simple, the controller-delay effect may not be very visible.
+    \item If the benchmark is too complex, the result may become difficult to explain.
+\end{itemize}
+
+\subsection{Suitable Application Examples}
+
+\begin{itemize}
+    \item The approach is suitable for loop-based hardware accelerators.
+    \item Suitable examples include:
+    \begin{itemize}
+        \item dot-product accelerators,
+        \item FIR filters,
+        \item simple image-processing kernels,
+        \item matrix or vector operations,
+        \item embedded signal-processing loops.
+    \end{itemize}
+
+    \item These applications often contain repeated loop operations and can benefit from partial unrolling.
+    \item The approach is especially useful when there is a strict timing budget.
+\end{itemize}
+
+\subsection{Unsuitable or Problematic Application Examples}
+
+\begin{itemize}
+    \item The approach may be less suitable for code with highly irregular control flow.
+    \item It may be less useful when loop bounds are unknown or data-dependent.
+    \item It may be difficult to apply when memory access patterns dominate performance.
+    \item It may be less effective if the HLS tool already performs aggressive automatic optimization.
+    \item It may also be less useful for very small loops where exhaustive exploration is already cheap.
+\end{itemize}
+
+\subsection{Transfer to a Student Implementation}
+
+\begin{itemize}
+    \item The original ASIC-based synthesis setup is likely not available for a low-budget student project.
+    \item A practical student implementation can instead use:
+    \begin{itemize}
+        \item a Python-based estimation model,
+        \item AMD Vitis HLS,
+        \item Intel HLS,
+        \item Bambu HLS,
+        \item or another available university HLS tool.
+    \end{itemize}
+
+    \item The implementation should not try to reproduce the original paper exactly.
+    \item The goal should be to demonstrate the same engineering principle.
+    \item The student experiment can compare different unroll factors for a small benchmark loop.
+    \item Example unroll factors:
+    \begin{itemize}
+        \item 1,
+        \item 2,
+        \item 4,
+        \item 8,
+        \item 16,
+        \item 32.
+    \end{itemize}
+
+    \item For each unroll factor, the following should be recorded:
+    \begin{itemize}
+        \item latency in cycles,
+        \item estimated clock period,
+        \item timing slack,
+        \item LUT or ALM usage,
+        \item flip-flop or register usage,
+        \item DSP usage,
+        \item BRAM or memory usage,
+        \item synthesis time if available.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Possible Python Simulation}
+
+\begin{itemize}
+    \item A Python model can be used if HLS tools are not available.
+    \item The Python model can estimate:
+    \begin{itemize}
+        \item operation count,
+        \item number of loop iterations after unrolling,
+        \item estimated latency,
+        \item estimated number of states,
+        \item estimated state bits,
+        \item estimated controller delay.
+    \end{itemize}
+
+    \item The simulation would not prove real hardware timing.
+    \item However, it can help demonstrate the trend that unrolling reduces loop iterations while increasing controller complexity.
+\end{itemize}
+
+\subsection{Possible HLS Experiment}
+
+\begin{itemize}
+    \item A small dot-product function can be written in C or C++.
+    \item The loop can be synthesized multiple times with different unroll factors.
+    \item The results can be compared using the HLS synthesis reports.
+    \item The most important output would be a table and graph showing:
+    \begin{itemize}
+        \item unroll factor versus latency,
+        \item unroll factor versus resource usage,
+        \item unroll factor versus clock estimate or timing slack.
+    \end{itemize}
+
+    \item This would provide a practical demonstration of the paper's main idea.
+\end{itemize}
+
+\subsection{Possible Extensions}
+
+\begin{itemize}
+    \item Compare loop unrolling with loop pipelining.
+    \item Study how memory partitioning affects the benefit of loop unrolling.
+    \item Test more than one benchmark loop.
+    \item Compare full unrolling with partial unrolling.
+    \item Extend the model to include datapath delay and routing delay.
+    \item Investigate how modern FPGA HLS tools report controller-related timing.
+\end{itemize}
+
+\subsection{Critical Conclusion}
+
+\begin{itemize}
+    \item The paper provides a useful reminder that HLS optimizations must be evaluated from a hardware perspective.
+    \item Loop unrolling can reduce latency, but it can also increase controller complexity and timing pressure.
+    \item The best unroll factor is usually a tradeoff, not simply the largest possible factor.
+    \item Estimation-based exploration is useful because exhaustive synthesis can be too slow.
+    \item For a student project, the most realistic implementation is a simplified estimation model supported by a small HLS experiment if tools are available.
+    \item The final seminar paper should clearly distinguish between:
+    \begin{itemize}
+        \item what the original paper proves,
+        \item what can be reproduced in a student environment,
+        \item and what remains a limitation or open question.
+    \end{itemize}
+\end{itemize}
+
+\begin{thebibliography}{00}
+
+\bibitem{kurra2007}
+S. Kurra, N. K. Singh, and P. R. Panda, ``The Impact of Loop Unrolling on Controller Delay in High Level Synthesis,'' DATE, 2007.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,241 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{amsmath}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{array}
+
+\begin{document}
+
+\title{Milestone 2: Scientific Contextualization and Tradeoff Analysis\\
+Loop Unrolling and Controller Delay in High-Level Synthesis}
+
+\author{\IEEEauthorblockN{Christian Percival}
+\IEEEauthorblockA{Hochschule Hamm-Lippstadt\\
+Electronic Engineering}}
+
+\maketitle
+
+\section{Milestone 2: Scientific Contextualization and Tradeoff Analysis}
+
+\subsection{Scientific Context}
+
+\begin{itemize}
+    \item Loop unrolling is a well-known optimization in compiler design.
+    \item In traditional software compilation, it is mainly used to:
+    \begin{itemize}
+        \item reduce loop overhead,
+        \item expose instruction-level parallelism,
+        \item improve scheduling opportunities,
+        \item increase performance on processors.
+    \end{itemize}
+
+    \item In high-level synthesis, the same optimization has different consequences.
+    \item The unrolled loop body is not only compiled into more instructions, but can become more hardware structure.
+    \item This means that loop unrolling affects:
+    \begin{itemize}
+        \item latency,
+        \item datapath size,
+        \item controller complexity,
+        \item multiplexer complexity,
+        \item resource usage,
+        \item timing closure.
+    \end{itemize}
+
+    \item The reference paper is positioned between compiler optimization and hardware synthesis.
+    \item Its main contribution is that it studies loop unrolling from the perspective of controller delay in HLS.
+\end{itemize}
+
+\subsection{Related Approaches}
+
+\begin{itemize}
+    \item Classical loop unrolling:
+    \begin{itemize}
+        \item Focuses on reducing loop overhead and improving software performance.
+        \item Usually considers processor execution, instruction scheduling, and memory behavior.
+        \item Does not directly consider FSM delay because software does not generate a hardware controller in the same way.
+    \end{itemize}
+
+    \item High-level synthesis scheduling:
+    \begin{itemize}
+        \item Decides which operations are executed in which clock cycles.
+        \item Determines the number of control steps.
+        \item Affects both latency and controller complexity.
+    \end{itemize}
+
+    \item Loop pipelining:
+    \begin{itemize}
+        \item Allows new loop iterations to start before previous iterations are complete.
+        \item Often improves throughput.
+        \item Can interact with loop unrolling.
+        \item May require additional hardware resources and careful dependency handling.
+    \end{itemize}
+
+    \item Resource sharing:
+    \begin{itemize}
+        \item Reuses functional units such as adders and multipliers across multiple operations.
+        \item Reduces area.
+        \item Can increase multiplexer and controller complexity.
+    \end{itemize}
+
+    \item Exhaustive design-space exploration:
+    \begin{itemize}
+        \item Synthesizes many possible design versions.
+        \item Can find good solutions.
+        \item Becomes expensive when many loops and unroll factors are involved.
+    \end{itemize}
+
+    \item Estimation-based design-space exploration:
+    \begin{itemize}
+        \item Uses high-level models to estimate performance or delay.
+        \item Avoids synthesizing every possible design.
+        \item Is faster but less exact than full synthesis.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Main Tradeoff}
+
+\begin{itemize}
+    \item The central tradeoff is between latency reduction and controller-delay increase.
+    \item Small unroll factors:
+    \begin{itemize}
+        \item keep the controller simpler,
+        \item use fewer hardware resources,
+        \item may still have relatively high latency.
+    \end{itemize}
+
+    \item Medium unroll factors:
+    \begin{itemize}
+        \item often give a good latency improvement,
+        \item usually avoid the worst timing and area penalties,
+        \item may be the most practical choice.
+    \end{itemize}
+
+    \item Large or full unroll factors:
+    \begin{itemize}
+        \item expose maximum parallelism,
+        \item reduce the number of loop iterations,
+        \item can greatly increase hardware resources,
+        \item can increase FSM and multiplexer complexity,
+        \item can create timing problems.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Latency Versus Clock Period}
+
+\begin{itemize}
+    \item A design with fewer cycles is not automatically faster.
+    \item Total execution time depends on both cycle count and clock period.
+    \item Loop unrolling can reduce the number of cycles.
+    \item However, if unrolling increases the critical path, the clock period may need to become longer.
+    \item Therefore, the final performance depends on:
+\end{itemize}
+
+\begin{equation}
+Execution\ Time = Latency\ in\ Cycles \times Clock\ Period
+\end{equation}
+
+\begin{itemize}
+    \item This means that a design with lower latency in cycles may still be worse if it has a much slower clock.
+\end{itemize}
+
+\subsection{Resource Tradeoffs}
+
+\begin{itemize}
+    \item Loop unrolling can increase resource usage because more operations are present in the loop body.
+    \item More arithmetic operations may require more:
+    \begin{itemize}
+        \item adders,
+        \item multipliers,
+        \item DSP blocks,
+        \item registers,
+        \item multiplexers,
+        \item memory ports.
+    \end{itemize}
+
+    \item If enough resources are available, unrolling can expose parallelism.
+    \item If resources are limited, unrolled operations may still need to share the same hardware units.
+    \item Resource sharing can reduce area but increase controller and multiplexer complexity.
+\end{itemize}
+
+\subsection{Timing Tradeoffs}
+
+\begin{itemize}
+    \item Unrolling can make the controller more complex.
+    \item A more complex controller may have longer combinational logic paths.
+    \item Larger multiplexers can also increase datapath delay.
+    \item These effects can reduce the maximum clock frequency.
+    \item Timing closure becomes more difficult when the unroll factor is too large.
+\end{itemize}
+
+\subsection{Scalability Tradeoffs}
+
+\begin{itemize}
+    \item The design-space exploration problem grows when there are multiple loops.
+    \item Each loop can have several possible unroll factors.
+    \item Exhaustively trying every combination can become impractical.
+    \item The reference paper addresses this by:
+    \begin{itemize}
+        \item pruning the search space,
+        \item considering promising unroll factors,
+        \item using a priority function,
+        \item estimating delay instead of synthesizing every candidate.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Comparison of Design Choices}
+
+\begin{table}[h]
+\centering
+\caption{Tradeoff summary for loop unrolling in HLS}
+\begin{tabular}{|p{0.22\linewidth}|p{0.32\linewidth}|p{0.32\linewidth}|}
+\hline
+\textbf{Design Choice} & \textbf{Advantages} & \textbf{Disadvantages} \\
+\hline
+No unrolling & Simple controller and low resource usage & Higher loop latency \\
+\hline
+Partial unrolling & Good balance between latency and complexity & Requires choosing a suitable factor \\
+\hline
+Full unrolling & Maximum exposed parallelism & High resource usage and possible timing problems \\
+\hline
+Exhaustive exploration & Can find strong design candidates & Very high synthesis time \\
+\hline
+Estimation-based exploration & Faster and more scalable & Less exact than full synthesis \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Relevance for Embedded Systems}
+
+\begin{itemize}
+    \item Embedded systems often have strict timing, area, power, and cost constraints.
+    \item HLS is useful for embedded hardware accelerators, but optimization choices must be hardware-aware.
+    \item Loop unrolling can improve performance, but may increase area and timing pressure.
+    \item A balanced unroll factor is important for practical embedded hardware.
+    \item The paper is relevant because it shows that controller delay must be considered, not only datapath latency.
+\end{itemize}
+
+\subsection{References and Related Work Situation}
+
+\begin{itemize}
+    \item Related work exists in compiler optimization, loop unrolling, software pipelining, HLS scheduling, timing estimation, and design-space exploration.
+    \item However, the specific focus on controller delay caused by loop unrolling in HLS is more specialized.
+    \item Therefore, not every loop-unrolling paper is equally relevant.
+    \item The strongest related work should be selected from:
+    \begin{itemize}
+        \item loop unrolling in compilers,
+        \item HLS timing estimation,
+        \item HLS scheduling,
+        \item loop pipelining,
+        \item design-space exploration.
+    \end{itemize}
+\end{itemize}
+
+\begin{thebibliography}{00}
+
+\bibitem{kurra2007}
+S. Kurra, N. K. Singh, and P. R. Panda, ``The Impact of Loop Unrolling on Controller Delay in High Level Synthesis,'' DATE, 2007.
+
+\end{thebibliography}
+
+\end{document}
