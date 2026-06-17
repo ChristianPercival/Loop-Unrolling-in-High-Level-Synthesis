@@ -1,0 +1,11 @@
+experiment_group,version,unroll_factor,target_clock_ns,estimated_clock_ns,uncertainty_ns,slack_ns,top_latency_ns,loop_latency_ns,iteration_latency,ii,trip_count,pipelined,bram,dsp,ff,lut,uram,notes
+baseline,1,10,6.860,2.70,0.44,370,350,5,1,32,yes,0,3,311,166,0,"no unroll pragma"
+unroll_2,2,10,6.860,2.70,0.44,210,190,5,1,16,yes,0,6,573,229,0,"HLS unroll factor 2"
+unroll_4,4,10,7.207,2.70,0.09,220,200,7,2,8,yes,0,6,832,508,0,"resource limitation; II increased to 2"
+unroll_8,8,10,7.207,2.70,0.09,220,200,9,4,4,yes,0,6,835,603,0,"resource limitation; II increased to 4"
+unroll_16,16,10,7.207,2.70,0.09,220,200,13,8,2,yes,0,6,979,816,0,"resource limitation; II increased to 8"
+unroll_32,32,10,7.826,2.70,-0.53,220,N/A,N/A,N/A,N/A,no,0,6,1025,978,0,"fully unrolled; timing fails with negative slack"
+partitioned_memory,partition_unroll_4,4,10,6.860,2.70,0.44,130,110,5,1,8,yes,0,12,1159,671,0,"complete array partition on x and z; HLS unroll factor 4"
+partitioned_memory,partition_unroll_8,8,10,7.207,2.70,0.09,90,70,5,1,4,yes,0,24,2203,1007,0,"complete array partition on x and z; HLS unroll factor 8"
+partitioned_memory,partition_unroll_16,16,10,7.207,2.70,0.09,80,60,6,1,2,yes,0,48,4486,2457,0,"complete array partition on x and z; HLS unroll factor 16"
+partitioned_memory,partition_unroll_32,32,10,7.207,2.70,0.09,50,N/A,N/A,N/A,N/A,no,0,60,4234,2150,0,"complete array partition on x and z; HLS unroll factor 32; fully unrolled so no loop row shown"

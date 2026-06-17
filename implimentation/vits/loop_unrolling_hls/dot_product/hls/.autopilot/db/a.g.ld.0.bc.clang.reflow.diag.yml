@@ -1,0 +1,87 @@
+--- !Passed
+Pass:            reflow-pragma-loop-unroll
+Name:            PragmaPartially2FullyUnroll
+DebugLoc:        { File: 'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp', 
+                   Line: 3, Column: 0 }
+Function:        dot_product
+Args:            
+  - String:          'Unrolling loop '''
+  - LoopName:        loop_main
+  - String:          ''' ('
+  - LoopLoc:         'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp:10:5'
+  - String:          ') '
+  - String:          'in function '''
+  - String:          dot_product
+  - String:          ''': changing partial unrolling into complete unrolling since the unrolling factor (='
+  - Factor:          '32'
+  - String:          ') is no less than the loop trip count (='
+  - TripCount:       '32'
+  - String:          ').'
+...
+--- !Passed
+Pass:            reflow-pragma-loop-unroll
+Name:            PragmaFullyUnroll
+DebugLoc:        { File: 'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp', 
+                   Line: 3, Column: 0 }
+Function:        dot_product
+Args:            
+  - String:          'Unrolling loop '''
+  - LoopName:        loop_main
+  - String:          ''' ('
+  - LoopLoc:         'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp:10:5'
+  - String:          ') '
+  - String:          'in function '''
+  - String:          dot_product
+  - String:          ''' completely with a factor of '
+  - Factor:          '32'
+...
+--- !Missed
+Pass:            inline
+Name:            NeverInline
+Function:        apatb_dot_product_ir
+Args:            
+  - Callee:          dot_product
+    DebugLoc:        { File: 'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp', 
+                       Line: 3, Column: 0 }
+  - String:          ' not inlined into '
+  - Caller:          apatb_dot_product_ir
+  - String:          ' because it should never be inlined (cost=never)'
+...
+--- !Passed
+Pass:            reflow-array-partition
+Name:            ArrayXform
+DebugLoc:        { File: 'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp', 
+                   Line: 3, Column: 0 }
+Function:        dot_product
+Args:            
+  - String:          'Applying '
+  - String:          array_partition
+  - String:          ' to '''
+  - UOName:          x
+  - String:          ''':'
+  - String:          ' '
+  - Mode:            Complete
+  - String:          ' partitioning'
+  - String:          ' on dimension '
+  - Dim:             '1'
+  - String:          .
+...
+--- !Passed
+Pass:            reflow-array-partition
+Name:            ArrayXform
+DebugLoc:        { File: 'C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp', 
+                   Line: 3, Column: 0 }
+Function:        dot_product
+Args:            
+  - String:          'Applying '
+  - String:          array_partition
+  - String:          ' to '''
+  - UOName:          z
+  - String:          ''':'
+  - String:          ' '
+  - Mode:            Complete
+  - String:          ' partitioning'
+  - String:          ' on dimension '
+  - Dim:             '1'
+  - String:          .
+...

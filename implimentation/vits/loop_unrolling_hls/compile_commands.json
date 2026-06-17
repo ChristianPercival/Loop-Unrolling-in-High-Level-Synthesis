@@ -1,0 +1,27 @@
+[
+  {
+    "directory": "C:\\git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls",
+    "arguments": [
+      "C:\\Xilinx\\2025.1\\Vitis\\vcxx\\libexec\\clang++.exe",
+      "--sysroot=C:\\Xilinx\\2025.1\\Vitis\\tps\\mingw\\10.0.0\\win64.o\\nt",
+      "-fhls",
+      "-hls-syn-headers-dir=C:\\Xilinx\\2025.1\\Vitis\\common\\technology\\autopilot",
+      "-fhlstoplevel=dot_product",
+      "-c",
+      "C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp"
+    ],
+    "file": "C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product.cpp"
+  },
+  {
+    "directory": "C:\\git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls",
+    "arguments": [
+      "C:\\Xilinx\\2025.1\\Vitis\\vcxx\\libexec\\clang++.exe",
+      "--sysroot=C:\\Xilinx\\2025.1\\Vitis\\tps\\mingw\\10.0.0\\win64.o\\nt",
+      "-fhls-tb",
+      "-hls-sim-headers-dir=C:\\Xilinx\\2025.1\\Vitis\\include",
+      "-c",
+      "C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product_test.cpp"
+    ],
+    "file": "C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/dot_product_test.cpp"
+  }
+]

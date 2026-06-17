@@ -1,0 +1,10 @@
+1. Use Vitis HLS if available.
+2. Create one dot_product.cpp file.
+3. Create one testbench to verify correctness.
+4. Run synthesis for unroll factors 1, 2, 4, 8, 16, 32.
+5. Save screenshots or exported reports.
+6. Create graphs:
+   - unroll factor vs latency
+   - unroll factor vs LUTs/FFs/DSPs
+   - unroll factor vs clock/timing slack
+7. Explain using the paper’s controller-delay argument.

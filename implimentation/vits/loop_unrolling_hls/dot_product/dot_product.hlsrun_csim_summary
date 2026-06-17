@@ -1,0 +1,156 @@
+<ENTRY>
+{
+ "thisFile": "C:/git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls\\dot_product\\dot_product.hlsrun_csim_summary",
+ "connectId": "",
+ "serverToken": "",
+ "timestamp": "0"
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_CmdStep",
+ "dateTimestamp": "06/17/26 16:19:14",
+ "timestampMillis": "1781705954693",
+ "buildStep": {
+  "cmdId": "8868018f-ad7b-449c-ad79-05c69e65cdbe",
+  "name": "vitis-run",
+  "logFile": "C:/git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls\\dot_product\\logs\\dot_product.steps.log",
+  "commandLine": "C:/Xilinx/2025.1/Vitis/bin/unwrapped/win64.o/vitis-run.exe  --mode hls --csim --config C:\\git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls\\hls_config.cfg --work_dir dot_product ",
+  "args": [
+   "--mode",
+   "hls",
+   "--csim",
+   "--config",
+   "C:\\git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls\\hls_config.cfg",
+   "--work_dir",
+   "dot_product"
+  ],
+  "iniFiles": [],
+  "cwd": "C:\\git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "06/17/26 16:19:14",
+ "timestampMillis": "1781705954694",
+ "status": {
+  "cmdId": "8868018f-ad7b-449c-ad79-05c69e65cdbe",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_FlowMetaData",
+ "dateTimestamp": "06/17/26 16:19:19",
+ "timestampMillis": "1781705959338",
+ "buildSummary": {
+  "hardwarePlatform": "",
+  "hardwareDsa": "",
+  "platformDirectory": "",
+  "runtime": "",
+  "systemConfig": "",
+  "flow": "BF_RUN",
+  "target": "TT_HLS_C_SIM",
+  "kernels": [
+   {
+    "base": {
+     "type": "KERNEL",
+     "name": "dot_product",
+     "file": "",
+     "reports": [],
+     "uuid": ""
+    },
+    "sources": [
+     "C:/git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\dot_product.cpp"
+    ],
+    "psSources": [],
+    "cuNames": [],
+    "type": "HLS",
+    "frequency": 0,
+    "freqUnits": ""
+   }
+  ],
+  "toolVersion": "2025.1"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_SubCmdStep",
+ "dateTimestamp": "06/17/26 16:19:19",
+ "timestampMillis": "1781705959339",
+ "buildStep": {
+  "cmdId": "4f65a7f3-4617-403a-9ada-db0ff554c184",
+  "name": "",
+  "logFile": "C:/git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls\\dot_product\\hls\\hls.log",
+  "commandLine": "",
+  "args": [],
+  "iniFiles": [],
+  "cwd": "C:\\git\\Loop-Unrolling-in-High-Level-Synthesis\\implimentation\\vits\\loop_unrolling_hls"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "06/17/26 16:19:19",
+ "timestampMillis": "1781705959340",
+ "status": {
+  "cmdId": "4f65a7f3-4617-403a-9ada-db0ff554c184",
+  "state": "CS_RUNNING"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "06/17/26 16:19:20",
+ "timestampMillis": "1781705960442",
+ "status": {
+  "cmdId": "4f65a7f3-4617-403a-9ada-db0ff554c184",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Status",
+ "dateTimestamp": "06/17/26 16:19:20",
+ "timestampMillis": "1781705960535",
+ "status": {
+  "cmdId": "8868018f-ad7b-449c-ad79-05c69e65cdbe",
+  "state": "CS_PASSED"
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "06/17/26 16:19:20",
+ "timestampMillis": "1781705960536",
+ "report": {
+  "path": "",
+  "name": "",
+  "fileType": "HTML",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>
+<ENTRY>
+{
+ "type": "ET_Report",
+ "dateTimestamp": "06/17/26 16:19:20",
+ "timestampMillis": "1781705960536",
+ "report": {
+  "path": "",
+  "name": "",
+  "fileType": "BINARY_PROTOBUF",
+  "reportType": "GLOBAL_RULECHECK_GUIDANCE",
+  "cmdId": ""
+ }
+}
+</ENTRY>

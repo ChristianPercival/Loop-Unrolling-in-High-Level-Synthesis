@@ -1,0 +1,14 @@
+{
+    "0": {
+        "name": "dot_product",
+        "file": "dot_product.cpp",
+        "fileloc": "3",
+        "instructions": "258",
+        "total_instructions": "258",
+        "calls": "",
+        "basicblocks": "1",
+        "memory_accesses": "0",
+        "control_depth": "0",
+        "def_use_depth": "7"
+    }
+}

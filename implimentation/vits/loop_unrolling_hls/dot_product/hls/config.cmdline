@@ -1,0 +1,3 @@
+relativeroot=C:/git/Loop-Unrolling-in-High-Level-Synthesis/implimentation/vits/loop_unrolling_hls
+original_argv=-c --mode hls --config C:\git\Loop-Unrolling-in-High-Level-Synthesis\implimentation\vits\loop_unrolling_hls\hls_config.cfg --work_dir dot_product 
+

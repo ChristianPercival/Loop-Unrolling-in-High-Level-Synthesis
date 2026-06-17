@@ -1,0 +1,42 @@
+# Vitis / Vivado generated files
+.vitis/
+.ide/
+.metadata/
+_build/
+build/
+logs/
+*.log
+*.jou
+*.str
+*.rpt
+*.xml
+*.html
+*.xo
+*.xclbin
+*.bit
+*.ltx
+*.dcp
+*.runs/
+*.cache/
+*.hw/
+*.ip_user_files/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Overleaf / LaTeX generated files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
