@@ -8,3 +8,17 @@
    - unroll factor vs LUTs/FFs/DSPs
    - unroll factor vs clock/timing slack
 7. Explain using the paper’s controller-delay argument.
+
+COnclusion:
+
+Loop unrolling in HLS is only useful when the hardware architecture can support the exposed parallelism. Array partitioning provides more parallel memory access, allowing greater unrolling benefits, but this comes at the cost of much higher FPGA resource usage.
+
+Without array partitioning, increasing the unroll factor beyond 2 did not improve latency because the design was limited by available memory/resource access. With complete array partitioning, the HLS tool could exploit much more parallelism, reducing latency from 220 ns to 50 ns at full unrolling. However, this required a large increase in DSP, FF, and LUT usage.
+
+Experiment A: normal memory
+Unrolling helps from factor 1 to 2, but then resource limitations stop further improvement.
+
+Experiment B: partitioned memory
+Array partitioning provides more parallel access, so higher unroll factors improve latency much more, but resource usage increases heavily.
+
+The rolled design looks more complicated in the schematic because it needs an FSM, multiplexers, and control logic to reuse one multiplier over several cycles. However, it is simpler in terms of arithmetic hardware because it only uses one multiplier. The unrolled designs look cleaner because they are mostly parallel datapath logic, but they are more expensive in hardware resources because they duplicate multipliers and adders.
